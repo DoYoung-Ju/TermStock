@@ -1,6 +1,6 @@
 # 📈 TermStock : 터미널 기반 실시간 암호화폐 차트 트래커
 
-**Developer**: 2024017497 주도영
+**Developer**
 
 ## 📖 프로젝트 소개 (Project Overview)
 **TermStock**은 무거운 GUI 프레임워크나 웹 브라우저 없이, 오직 **리눅스 터미널(Terminal)** 창 하나만으로 바이낸스(Binance) API 기반의 실시간 시세와 글로벌 경제 뉴스를 모니터링할 수 있는 경량화된 차트 트래커입니다. 
