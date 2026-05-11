@@ -22,6 +22,7 @@ extern int num_symbols;
 extern int selected_idx;
 extern char news_headlines[3][256];
 extern int last_fetched_news_idx;
+extern char current_interval[10];
 
 // 뮤텍스(자물쇠) 공유
 extern pthread_mutex_t data_mutex;

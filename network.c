@@ -46,7 +46,7 @@ void fetch_price(const char* symbol, char* price_out, float* open_out, float* cl
 		close(pipe_fd[1]);
 
 		char url[256];
-		sprintf(url, "https://api.binance.com/api/v3/klines?symbol=%s&interval=1h&limit=%d", symbol, CHART_POINTS);
+		sprintf(url, "https://api.binance.com/api/v3/klines?symbol=%s&interval=%s&limit=%d", symbol, current_interval, CHART_POINTS);
 
 		execlp("curl", "curl", "-s", url, NULL);
 		exit(1);

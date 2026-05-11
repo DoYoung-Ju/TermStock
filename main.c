@@ -75,9 +75,12 @@ int main()
 		{
 			mvprintw(4, right_start, "Symbol: %s", watchlist[selected_idx].symbol);
 			mvprintw(5, right_start, "Price : %s", watchlist[selected_idx].price);
+            mvprintw(4, right_start + 30, "[ Interval: %s ]  (1: 1m | 2: 15m | 3: 1h | 4: 1d)", current_interval);            
+            int chart_w = max_x - right_start - 2;
+            int chart_h = max_y - 14;
 
-            int chart_w = 50;
-            int chart_h = 15;
+            if (chart_h < 5) chart_h = 5; 
+            if (chart_w < 10) chart_w = 10;
 			//draw_ascii_chart(7, right_start, watchlist[selected_idx].open_data, watchlist[selected_idx].close_data);
             //draw_braille_chart(6, right_start, chart_w, chart_h, watchlist[selected_idx].close_data, CHART_POINTS);
             draw_candlestick_chart(6, right_start, chart_w, chart_h, 
@@ -107,7 +110,22 @@ int main()
 		refresh();
 
 		int ch = getch();
-
+        if (ch == '1' || ch == '2' || ch == '3' || ch == '4') {
+            pthread_mutex_lock(&data_mutex);
+            
+            if (ch == '1') strcpy(current_interval, "1m");       // 1분봉
+            else if (ch == '2') strcpy(current_interval, "15m"); // 15분봉
+            else if (ch == '3') strcpy(current_interval, "1h");  // 1시간봉
+            else if (ch == '4') strcpy(current_interval, "1d");  // 일봉
+            
+            // 변경된 즉시 차트를 지워서 로딩 화면이 뜨게 만듦 (UX 디테일)
+            if (num_symbols > 0) {
+                watchlist[selected_idx].close_data[0] = 0.0f;
+            }
+            
+            pthread_mutex_unlock(&data_mutex);
+            write_log("User Event: Changed timeframe to %s", current_interval);
+        }
 		if (ch == KEY_UP && selected_idx > 0) {
             selected_idx--;
         }

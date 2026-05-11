@@ -14,6 +14,7 @@ int num_symbols = 0;
 int selected_idx = 0;
 char news_headlines[3][256] = {"Loading breaking news...", "", ""};
 int last_fetched_news_idx = -1;
+char current_interval[10] = "1h";
 
 pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t news_mutex = PTHREAD_MUTEX_INITIALIZER;
