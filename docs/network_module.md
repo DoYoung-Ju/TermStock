@@ -1,41 +1,38 @@
-# 🌐 Network Module (`network.h`, `network.c`) : Async Data Pipeline
+🌐 Network Module (network.h, network.c) : Async IPC & Multi-threading Pipeline
 
-**Author**: 2024017497 주도영
+1. Module Overview (모듈 개요)
+network 모듈은 TermStock 프로젝트의 데이터 공급 파이프라인(Data Pipeline)입니다. 바이낸스(Binance) API의 실시간 시세 데이터와 글로벌 암호화폐 뉴스(RSS 피드)를 외부 서버로부터 수집하여 전역 상태 저장소(data.c)에 전달합니다.
 
-## 1. Overview (개요)
-`network` 모듈은 TermStock 프로젝트의 **데이터 공급 파이프라인(Data Pipeline)**을 담당합니다. 바이낸스(Binance) API의 실시간 시세 데이터와 글로벌 암호화폐 뉴스(RSS 피드)를 외부 서버로부터 수집하여 내부 데이터베이스(`data.c`)에 안전하게 전달합니다.
+가장 큰 기술적 성과는 네트워크 지연(Network Latency)으로 인해 터미널 UI가 멈추는(Freezing) 현상을 완벽하게 방지하기 위해 비동기 멀티스레딩(Asynchronous Multi-threading)을 도입하고, 무거운 파싱 라이브러리 대신 OS 레벨의 프로세스 간 통신(IPC)을 설계했다는 점입니다.
 
-가장 큰 기술적 특징은 네트워크 지연(Network Latency)으로 인해 터미널 UI가 멈추는 현상을 방지하기 위해 **100% 비동기 멀티스레딩(Asynchronous Multi-threading)**으로 설계되었다는 점입니다.
+2. Core System Programming Concepts (핵심 시스템 프로그래밍 기법)
+본 모듈은 C언어의 한계를 극복하기 위해 리눅스/UNIX의 핵심 철학과 시스템 콜(System Call)을 적극적으로 활용했습니다.
 
-## 2. Core Concepts (핵심 설계 철학)
+Inter-Process Communication (IPC 및 파이프라인):
+무거운 HTTP/JSON 통신 라이브러리(libcurl, cJSON 등)를 정적으로 링크하는 대신, 시스템 콜을 직접 호출했습니다. pipe()로 통신 통로를 열고, fork()로 자식 프로세스를 생성한 뒤, dup2()를 통해 표준 출력(STDOUT)을 파이프로 리다이렉션하여 부모 프로세스가 데이터를 read()로 읽어오는 완벽한 IPC 파이프라인을 구축했습니다.
 
-* **UNIX Philosophy (리눅스 파이프라인 활용):**
-  C언어 환경에서 무거운 HTTP/JSON 파싱 라이브러리(예: `libcurl`, `cJSON`)를 정적으로 링크하면 바이너리가 무거워지고 의존성이 복잡해집니다. 이를 피하기 위해 OS 내장 명령어인 `curl`, `grep`, `awk`, `tail` 등을 `popen()` 또는 프로세스 파이프라인(`|`)으로 조합하여 가볍고 빠른 파싱 환경을 구축했습니다.
-* **Thread-Safe Data Handling (스레드 안전성):**
-  백그라운드 네트워크 스레드가 데이터를 갱신하는 순간 메인 UI 스레드가 데이터를 읽으면 Race Condition(경쟁 상태)이 발생해 프로그램이 튕길 수 있습니다. 이를 방지하기 위해 `pthread_mutex_t`를 통한 정교한 락(Lock) 메커니즘을 적용했습니다.
+Thread-Safe Asynchrony (스레드 안전성 및 비동기 제어):
+주가 갱신과 뉴스 갱신을 메인 UI와 완전히 분리된 POSIX Threads(pthread) 백그라운드 워커로 동작시킵니다. 두 스레드가 전역 배열(watchlist)을 갱신할 때 메인 스레드와 충돌(Race Condition)하지 않도록 pthread_mutex_t를 통한 정교한 락(Lock) 메커니즘을 적용했습니다.
 
-## 3. Function Details (주요 메서드 분석)
+Process Lifecycle Management (좀비 프로세스 방지):
+execlp()를 호출하여 자식 프로세스를 쉘 명령어로 덮어씌우고, 부모 프로세스는 waitpid()를 호출하여 자식 프로세스가 안전하게 종료될 때까지 대기합니다. 메모리 누수와 좀비 프로세스 생성을 원천 차단했습니다.
 
-### `void* fetch_worker(void* arg)`
-* **역할:** 주가 데이터를 주기적으로 긁어오는 백그라운드 워커(Worker) 스레드입니다.
-* **동작 원리:** 무한 루프(`while(is_running)`)를 돌며 설정된 간격(예: 5초)마다 선택된 종목의 바이낸스 API(`interval=1h`)를 호출합니다.
+3. Function Details (주요 메서드 및 시스템 콜 분석)
+📡 Data Fetching (fetch_price, fetch_news)
+핵심 시스템 콜 Flow: pipe() ➔ fork() ➔ close() ➔ dup2() ➔ execlp() ➔ read() ➔ waitpid()
 
-### `void parse_klines(const char* json_data, float* open_data, float* close_data)`
-* **역할:** 바이낸스가 응답한 OHLC(시가/고가/저가/종가) 배열 데이터에서 시가와 종가만 정밀하게 추출합니다.
-* **특징:** C언어의 문자열 토큰화 로직(`strtok` 또는 인덱스 스캔)을 최적화하여 메모리 오버헤드 없이 `float` 배열로 스케일링 데이터를 넘겨줍니다.
+동적 URL 포맷팅 (fetch_price): 고정된 API가 아닌, data 모듈의 current_interval 변수를 sprintf로 주입받아 URL을 생성합니다. 유저가 분봉/일봉(1m, 15m, 1h, 1d)을 변경하는 즉시 동적으로 API를 재호출합니다.
 
-### `void* news_worker(void* arg)`
-* **역할:** 암호화폐 관련 최신 뉴스 헤드라인을 가져오는 독립 스레드입니다.
-* **특징:** API 호출 횟수를 낭비하지 않기 위해, 타임 타이머 기반이 아닌 '사용자가 종목을 변경했을 때' 등 특정 이벤트가 발생할 때만 비동기적으로 동작하도록 상태 플래그를 제어합니다.
+쉘 파이프라인 파싱 (fetch_news): RSS 피드를 가져온 뒤, curl | grep | tail -n +2 | head -n 3 | awk로 이어지는 리눅스 쉘 파이프라인 명령어를 C언어 내부로 끌어와, 불필요한 메타데이터를 쳐내고 순수 기사 제목 3줄만 초고속으로 추출해 냅니다.
 
-### `void fetch_news()`
-* **역할:** RSS 피드(Cointelegraph 등)를 JSON으로 변환해 주는 API를 호출하고, 핵심 헤드라인 3줄을 파싱합니다.
-* **버그 픽스 및 최적화 로직:**
-  * `tail -n +2` 명령어를 쉘 스크립트 파이프에 삽입하여, API가 반환하는 첫 번째 무의미한 메타데이터(채널명)를 필터링(Skip)하고, `head -n 3`로 정확히 3개의 알짜 기사만 렌더링되도록 튜닝했습니다.
+🧵 Async Worker Threads (fetch_worker, news_worker)
+fetch_worker: 무한 루프 내에서 sleep(5)를 통해 5초 주기로 모든 관심 종목의 시세 데이터를 폴링(Polling)합니다.
 
-### Dynamic API URL Formatting (동적 엔드포인트 조립)
-* **특징:** 고정된 API 주소를 호출하는 것이 아니라, `data` 모듈에서 관리하는 `current_interval` 전역 변수를 `sprintf` 포맷팅(`%s`)으로 주입받아 URL을 생성합니다. 
-* **효과:** 사용자가 타임프레임을 변경하는 즉시 네트워크 워커 스레드가 이를 감지하고, "1m", "15m", "1d" 등 조건에 맞는 바이낸스(Binance) Klines API를 동적으로 호출하여 완전히 새로운 추세 데이터를 파이프라인으로 가져옵니다.
+news_worker: API 호출 낭비를 막기 위해 타임 타이머가 아닌 '사용자가 종목 커서(selected_idx)를 변경했을 때'만 조건부로 뉴스를 비동기 갱신하는 최적화된 이벤트 리스너(Event Listener) 형태로 동작합니다.
 
-## 4. Technical Highlights for Presentation (발표 핵심 포인트)
-> "이 모듈을 개발할 때 가장 집중한 것은 **'메인 UI 스레드의 절대적인 방어'**입니다. 만약 와이파이가 끊기거나 서버 응답이 10초 이상 지연되더라도, 유저는 여전히 터미널에서 부드럽게 방향키를 움직이고 종목을 삭제할 수 있습니다. 네트워크 작업과 화면 렌더링(UI) 작업을 POSIX Thread(`pthread`)로 완벽하게 격리시켰기 때문입니다. 또한, 리눅스 시스템 프로그래밍의 강력함을 살려 파이프라인 명령어를 C언어 내부로 끌어와 파서(Parser)를 직접 구현한 것이 제 개발 역량을 가장 잘 보여주는 부분이라고 생각합니다."
+✂️ Memory-Efficient Parsing (parse_klines)
+바이낸스 API가 반환하는 대용량 JSON 데이터(다차원 배열)를 무거운 파서 없이 C 표준 라이브러리인 strchr, atof의 포인터 연산만으로 스캔하여, 캔들 렌더링에 필요한 시가(Open)와 종가(Close)만 float 배열로 초고속 추출합니다.
+
+4. Technical Highlights for Presentation (발표 핵심 포인트)
+"이 모듈을 개발할 때 가장 집중한 두 가지는 **'메인 UI 스레드의 절대적인 방어'**와 **'OS 자원의 극대화'**입니다. 만약 와이파이가 끊기거나 서버 응답이 10초 이상 지연되더라도, 유저는 여전히 터미널에서 부드럽게 방향키를 움직이고 차트 타임프레임을 전환할 수 있습니다.
+또한, C언어로 JSON 통신을 구현하기 위해 무거운 라이브러리를 쓰는 대신, 운영체제 수업에서 배운 fork, pipe, dup2 시스템 콜을 응용하여 자식 프로세스에게 curl 명령을 위임하는 독자적인 IPC 아키텍처를 설계했습니다. 이는 제 시스템 프로그래밍 역량과 트러블슈팅 능력을 가장 명확하게 보여주는 핵심 파이프라인입니다."
