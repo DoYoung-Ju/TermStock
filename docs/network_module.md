@@ -26,7 +26,7 @@ execlp()를 호출하여 자식 프로세스를 쉘 명령어로 덮어씌우고
 쉘 파이프라인 파싱 (fetch_news): RSS 피드를 가져온 뒤, curl | grep | tail -n +2 | head -n 3 | awk로 이어지는 리눅스 쉘 파이프라인 명령어를 C언어 내부로 끌어와, 불필요한 메타데이터를 쳐내고 순수 기사 제목 3줄만 초고속으로 추출해 냅니다.
 
 🧵 Async Worker Threads (fetch_worker, news_worker)
-fetch_worker: 무한 루프 내에서 sleep(5)를 통해 5초 주기로 모든 관심 종목의 시세 데이터를 폴링(Polling)합니다.
+fetch_worker: 무한 루프 내에서 usleep(100000)을 통해 0.1초 주기로 모든 관심 종목의 시세 데이터를 폴링(Polling)합니다.
 
 news_worker: API 호출 낭비를 막기 위해 타임 타이머가 아닌 '사용자가 종목 커서(selected_idx)를 변경했을 때'만 조건부로 뉴스를 비동기 갱신하는 최적화된 이벤트 리스너(Event Listener) 형태로 동작합니다.
 
