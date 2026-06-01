@@ -46,7 +46,3 @@ Event Routing (이벤트 라우팅):
 pthread_join으로 백그라운드 스레드들의 종료를 대기하고, pthread_mutex_destroy로 자물쇠 객체를 OS에 반환합니다.
 
 endwin()을 호출하여 터미널을 원래의 쉘(Shell) 상태로 복구합니다.
-
-4. Technical Highlights for Presentation (발표 핵심 포인트)
-"제가 이 모듈을 설계하며 가장 집중한 것은 **'사용자 경험(UX)'**과 **'완벽한 자원 회수(Cleanup)'**입니다.
-메인 루프를 논블로킹(Non-blocking)으로 전환하고 더블 버퍼링을 적용하여, C언어 터미널 환경이라는 투박한 제약 속에서도 웹 HTS 못지않은 극강의 부드러움과 반응성(Responsive UI)을 이끌어 냈습니다. 또한, signal 핸들링으로 시작해 스레드 join, 그리고 마지막 waitpid 좀비 프로세스 수거까지 이어지는 안전 종료 파이프라인을 구축하여, 종료 시 단 1바이트의 메모리 누수도 허용하지 않는 견고한 아키텍처를 완성했습니다."
