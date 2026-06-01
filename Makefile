@@ -27,3 +27,12 @@ $(TARGET): $(OBJS)
 # 💡 찌꺼기 파일 청소용 (make clean)
 clean:
 	rm -f $(OBJS) $(TARGET)
+
+----------------------------------------------------
+
+sudo apt update
+sudo apt install build-essential libncursesw5-dev curl
+git clone https://github.com/DoYoung-Ju/TermStock.git
+cd TermStock
+make
+./termstock
