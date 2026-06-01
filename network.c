@@ -137,7 +137,9 @@ void* fetch_worker(void* arg) {
                 }
             }
         }
-        sleep(5);
+        for(int s = 0; s < 50 && is_running; s++) {
+            usleep(100000); // 0.1초 대기
+        }
     }
 	write_log("Worker thread terminated.");
     return NULL;
