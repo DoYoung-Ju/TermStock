@@ -31,6 +31,3 @@ set_pixel(Canvas* canvas, int x, int y): 가상 캔버스의 특정 좌표에 �
 draw_line(Canvas* canvas, int x0, int y0, int x1, int y1): X축과 Y축의 누적 오차값(err)을 계산하는 브레젠험 알고리즘을 수행하여 픽셀 간의 선을 긋습니다.
 
 draw_canvas_to_screen(Canvas* canvas, int start_y, int start_x): 가상 메모리에 완성된 비트맵을 2x4 윈도우 단위로 스캔하여 점자 문자로 디코딩한 뒤, 터미널 화면으로 일괄 전송(Flush)합니다.
-
-4. Technical Highlights
-"이 모듈의 진가는 '극한의 최적화'에 있습니다. 단순히 API 데이터를 텍스트로 나열하는 것을 넘어, 무거운 소수점 연산을 철저히 배제하고 CPU 오버헤드 없이 10x40 크기의 터미널 공간을 40x160 (총 6,400 서브 픽셀)의 고해상도 도화지로 변환해 냈습니다. 이는 제약된 터미널 환경에서도 성능 타협 없이 HTS 수준의 시각화를 이끌어낸 독자적인 렌더링 엔진 설계의 결과물입니다."
