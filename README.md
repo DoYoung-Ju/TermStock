@@ -87,7 +87,7 @@
 
 ### Prerequisites
 
-본 프로젝트는 **Linux 환경(Ubuntu 권장)**에 최적화되어 있습니다. 다음 패키지를 먼저 설치해주세요.
+본 프로젝트는 Linux 환경(Ubuntu 권장)에 최적화되어 있습니다. 다음 패키지를 먼저 설치해주세요.
 
 ```bash
 sudo apt update
