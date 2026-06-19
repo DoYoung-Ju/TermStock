@@ -93,7 +93,6 @@ make
 
 <img width="1297" height="763" alt="image" src="https://github.com/user-attachments/assets/14680f00-4731-4c2c-9b6b-0d2a537ef72f" />
 <img width="1299" height="763" alt="image" src="https://github.com/user-attachments/assets/44ba9d0a-92e0-4ea5-96df-4cb8bbdf500d" />
-<img width="1296" height="759" alt="image" src="https://github.com/user-attachments/assets/c3646b5e-6873-4ce4-a254-d0f0993c8929" />
 
 
 
@@ -123,7 +122,7 @@ make
 > 📸 **Demo Screenshot**
 >
 > ```
-> ![TermStock Demo](docs/demo.png)
+<img width="1296" height="759" alt="image" src="https://github.com/user-attachments/assets/c3646b5e-6873-4ce4-a254-d0f0993c8929" />
 > ```
 
 ---
