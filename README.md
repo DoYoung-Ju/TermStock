@@ -122,7 +122,7 @@ make
 > 📸 **Demo Screenshot**
 >
 > ```
-<img width="1296" height="759" alt="image" src="https://github.com/user-attachments/assets/c3646b5e-6873-4ce4-a254-d0f0993c8929" />
+><img width="1296" height="759" alt="image" src="https://github.com/user-attachments/assets/c3646b5e-6873-4ce4-a254-d0f0993c8929" />
 > ```
 
 ---
