@@ -120,10 +120,7 @@ make
 대신 리눅스 시스템 콜(`fork`, `pipe`, `exec`)과 POSIX 스레드(`pthread`), 그리고 `ncursesw` 라이브러리를 결합하여 **순수 OS 추상화 계층 위에서 동작하는 고성능 비동기 파이프라인**을 구현했습니다.
 
 > 📸 **Demo Screenshot**
->
-> ```
->![TermStock](docs/demo.png)
-> ```
+<img width="1296" height="759" alt="image" src="https://github.com/user-attachments/assets/2a5a143e-4e9e-4944-b5ff-a67f60382276" />
 
 ---
 
