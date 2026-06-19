@@ -131,6 +131,7 @@ make
 ## 🎯 Key Features
 
 | 기능 | 설명 |
+| --- | --- |
 | **Zero-Dependency IPC Network** | `pipe`, `fork`, `dup2`, `execlp` 시스템 콜로 `curl`·`awk`와 통신하는 독자적 IPC 아키텍처 |
 | **Flicker-Free Braille Engine** | 브레젠험(Bresenham) 알고리즘 + 비트 마스킹으로 터미널 1칸을 2×4 픽셀로 활용하는 고해상도 그래픽 엔진 |
 | **Thread-Safe Concurrency** | 백그라운드 수집 스레드 ↔ 메인 렌더링 스레드 완전 분리, 세분화된 Mutex 락으로 Race Condition 원천 차단 |
@@ -185,6 +186,7 @@ sudo apt install build-essential libncursesw5-dev curl
 ```
 
 | 패키지 | 용도 |
+| --- | --- |
 | `build-essential` | GCC 컴파일러 및 make |
 | `libncursesw5-dev` | 터미널 UI 라이브러리 (유니코드 점자 지원) |
 | `curl` | Binance API 데이터 수집 |
@@ -213,6 +215,7 @@ make clean
 프로그램 실행 중 아래 단축키로 조작할 수 있습니다. (논블로킹 환경으로 동작합니다)
 
 | Key | Description |
+| --- | --- |
 | `↑` / `↓` | 관심 종목(Watchlist) 커서 이동 |
 | `1` | 타임프레임: 1분봉 (1m) |
 | `2` | 타임프레임: 15분봉 (15m) |
@@ -227,6 +230,7 @@ make clean
 ## 👥 Team Members
 
 | 이름 | 학번 |
+| --- | --- |
 | 주도영 | 2024017497 |
 | 전진영 | 2024 | UI Module, Chart Module |
 | 김민성 | 2024017248 |
