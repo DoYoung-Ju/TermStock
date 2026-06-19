@@ -51,7 +51,7 @@
 
 ## 🏗️ System Architecture
 
-철저한 **역할 분리(Separation of Concerns)**를 통한 3-Tier 아키텍처로 설계되었습니다.
+철저한 역할 분리(Separation of Concerns)를 통한 3-Tier 아키텍처로 설계되었습니다.
 
 ```
 ┌─────────────────────────────────────────────┐
